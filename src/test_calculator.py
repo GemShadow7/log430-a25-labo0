@@ -39,7 +39,8 @@ def test_division(calc):
 from calculator import Calculator
 import pytest
 
-def test_addition_fail():
-    calc = Calculator()
+
+#def test_addition_fail():
+    #calc = Calculator()
     # Ce test va échouer volontairement : 2 + 3 ≠ 6
-    assert calc.addition(2, 3) == 6
+    #assert calc.addition(2, 3) == 6
