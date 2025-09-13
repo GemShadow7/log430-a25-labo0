@@ -16,7 +16,7 @@ Dans ce laboratoire, vous travaillerez sur une application calculatrice. Cette c
 
 Dans les prochains laboratoires, nous verrons des architectures plus complexes et nous travaillerons avec une variété d'outils logiciels et de concepts architecturaux.
 
-Test Test VM
+Deuxième Test Test VM
 > ⚠️ IMPORTANT : Avant de commencer le setup et les activités, veuillez lire la documentation architecturale dans le répertoire `/docs/arc42/docs.pdf`.
 
 ### 1. Faites un fork et clonez le dépôt GitLab
