@@ -1,54 +1,53 @@
-name: example_CI
+name: CI
 
-on: [push, pull_request]
+on: 
+  push: 
+    branches: [main, master]
+  pull_request: 
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    environment: Labo0
-
+  test: 
+    runs-on: self-hosted   # Exécute les tests directement sur ta VM
+    environment: Test Pipeline CI/CD
     steps:
-      - name: Checkout dépot
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Installer Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Installer les dépendances
+      - name: Installer requirements.txt
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
 
-      - name: Tests
-        working-directory: src
+      - name: Créer fichier .env 
         run: | 
-          python -m pytest 
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env 
+          echo "DB_NAME=labo02_db" >> .env
+          echo "DB_USER=labo02" >> .env 
+          echo "DB_PASS=lab02" >> .env
+          echo "REDIS_HOST=127.0.0.1" >> .env 
+          echo "REDIS_PORT=6379" >> .env
+          echo "REDIS_DB=0" >> .env
 
-      - name: Déploiement via SSH
+      - name: Exécuter les tests
+        working-directory: src
         run: |
-          # Install SSH client
-          sudo apt-get update && sudo apt-get install -y openssh-client
+          python3 -m pytest
 
-          if [ -z "${{ secrets.SSH_SERVER_HOST }}" ]; then
-            echo "ERROR: SSH_SERVER_HOST secret is not set or empty"
-            exit 1
-          else
-            echo "SSH_SERVER_HOST is set"
-          fi
-          
-          # Setup SSH key
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          
-          # Add server to known hosts to avoid host key verification prompt
-          ssh-keyscan -H ${{ secrets.SSH_SERVER_HOST }} >> ~/.ssh/known_hosts
-          
-          # Deploy via SSH
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER_HOST }} << 'EOF'
-            cd log430-a25-labo0
-            git pull origin main
-          EOF
+  deploy:
+    runs-on: self-hosted
+    needs: test   # Ne se lance que si les tests passent
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Déploiement local
+        run: |
+          cd $GITHUB_WORKSPACE
+          echo "Déploiement sur la VM en cours..."
+
+          docker compose down || true
+          docker compose up -d --build
