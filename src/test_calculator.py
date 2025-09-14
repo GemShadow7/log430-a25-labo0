@@ -42,5 +42,5 @@ import pytest
 
 #def test_addition_fail():
     #calc = Calculator()
-    # Ce test va échouer volontairement : 2 + 3 ≠ 6
+    # Ce test va échouer volontairement
     #assert calc.addition(2, 3) == 6
